@@ -1,4 +1,5 @@
 import 'package:covid_app/Screens/Login/login_page.dart';
+import 'package:covid_app/Screens/Signup/signup_screen.dart';
 import 'package:covid_app/assets/assets.dart';
 import 'package:flutter/material.dart';
 
@@ -65,7 +66,9 @@ class _MyHomePageState extends State<MyHomePage> {
             height: 50,
             width: 300,
             child: RaisedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage()));
+              },
               child: const Text("Sign-up", style: TextStyle(fontSize: 18.0),),
               color: AppColors.secondaryColor,
               textColor: Colors.white,

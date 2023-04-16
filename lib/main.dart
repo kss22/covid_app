@@ -1,4 +1,6 @@
+import 'package:covid_app/Screens/Home/home_screen.dart';
 import 'package:covid_app/Screens/Login/login_page.dart';
+import 'package:covid_app/Screens/Signup/signup_screen.dart';
 import 'package:covid_app/Screens/Welcome/welcome.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +23,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const MyHomePage(),
         '/login': (context) => const LoginPage(),
-        // '/settings': (context) => SettingsPage(),
+        '/signup': (context) => const SignupPage(),
+        '/home': (context) => const HomePage(),
       },
     );
   }

@@ -1,3 +1,4 @@
+import 'package:covid_app/Screens/Home/home_screen.dart';
 import 'package:covid_app/Screens/Login/login_field_text.dart';
 import 'package:covid_app/Screens/Welcome/welcome.dart';
 import 'package:covid_app/assets/assets.dart';
@@ -47,7 +48,7 @@ class _BodyLogInState extends State<BodyLogIn> {
         children: [
           SizedBox(height: 80),
           Text(
-            "Welcome to medicalife",
+            "Welcome to Covaccine",
             style: TextStyle(
               fontSize: 28.0,
               fontWeight: FontWeight.bold,
@@ -91,8 +92,8 @@ class _BodyLogInState extends State<BodyLogIn> {
                 ErrorFieldtext(
                   errorMessage: "Wrong email",
                   controllers: _emailController,
-                  label: "e.g. Joe Abey",
-                  hint: "Enter Your Username",
+                  label: "e.g. abc@mail.com",
+                  hint: "Enter Your Email",
                   cap: TextCapitalization.words,
                   visibility: true,
                 ),
@@ -100,8 +101,8 @@ class _BodyLogInState extends State<BodyLogIn> {
                 Fieldtext(
                   cap: TextCapitalization.none,
                   controllers: _emailController,
-                  label: "e.g. Joe Abey",
-                  hint: "Enter Your Username",
+                  label: "e.g. abc@mail.com",
+                  hint: "Enter Your Email",
                   visibility: true,
                 ),
               Padding(
@@ -167,7 +168,7 @@ class _BodyLogInState extends State<BodyLogIn> {
 
                       if (user != null) {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => MyHomePage()));
+                            builder: (context) => HomePage()));
                         // Navigator.of(context).pushNamedAndRemoveUntil('/home' , (_) => false);
                         // Navigator.pushNamedAndRemoveUntil('/home', (_) => false);
                         // Navigator.of(context).pushReplacementNamed('/home');
