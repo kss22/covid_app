@@ -5,9 +5,10 @@ import 'package:covid_app/assets/assets.dart';
 import 'package:covid_app/assets/field_text.dart';
 import 'package:covid_app/assets/rounded_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class UserBodySignup extends StatefulWidget {
   const UserBodySignup({Key? key}) : super(key: key);
@@ -47,12 +48,67 @@ class _UserBodySignupState extends State<UserBodySignup> {
     return user;
   }
 
+  DateTime _selectedDate = DateTime.now();
+
+  Future<void> _showDatePicker() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final MaskTextInputFormatter _phoneNumberFormatter = MaskTextInputFormatter(
+    mask: '+961 ## ######',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  @override
+  void dispose() {
+    _phoneNumberController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController _emailController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
     TextEditingController _nameController = TextEditingController();
+    TextEditingController _idController = TextEditingController();
+    TextEditingController _cityController = TextEditingController();
+    TextEditingController _countryController = TextEditingController();
+    TextEditingController _medController = TextEditingController();
     Size size = MediaQuery.of(context).size;
+
+    final DatabaseReference database = FirebaseDatabase.instance.reference();
+
+    DatabaseReference user1Ref = database.child('users').child('user${_idController.text}');
+
+    void addUser() {
+      Map<String, dynamic> children = {
+        'email': _emailController.text,
+        'phone': _phoneNumberController.text,
+        'name' : _nameController.text,
+        'date' : _selectedDate.toString(),
+        'city' : _cityController.text,
+        'country' : _countryController.text,
+        'medical_conditions': _medController.text,
+      };
+      user1Ref.update(children)
+          .then((value) {
+        print('Data updated successfully');
+      })
+          .catchError((error) {
+        print('Failed to update data: $error');
+      });
+    }
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -83,7 +139,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
               Padding(
                 padding: EdgeInsets.only(left: 10.0, bottom: 5.0),
                 child: Text(
-                  "Username:",
+                  "Full Name:",
                   style: TextStyle(
                     fontWeight: FontWeight.w300,
                     fontSize: 18.0,
@@ -95,7 +151,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
                     controllers: _nameController,
                     visibility: true,
                     label: "e.g. Abey Joe",
-                    hint: "Enter Your Username",
+                    hint: "Enter Your Full Name",
                     cap: TextCapitalization.words),
               if (wrongUsername)
                 ErrorFieldtext(
@@ -103,7 +159,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
                     controllers: _nameController,
                     visibility: true,
                     label: "e.g. Abey Joe",
-                    hint: "Enter your username",
+                    hint: "Enter your full name",
                     cap: TextCapitalization.words),
               Padding(
                 padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
@@ -157,6 +213,123 @@ class _UserBodySignupState extends State<UserBodySignup> {
                     label: "e.g. ******",
                     hint: "Enter you password",
                     cap: TextCapitalization.none),
+
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
+                child: Text(
+                  "ID Card Number:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0, right: 10.0),
+                child: TextField(
+                  controller: _idController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppColors.primaryColor,
+                    labelText: "e.g 0000XXXXXXXX",
+                    hintText: "ID Card Number",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
+                child: Text(
+                  "Phone Number:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10, top: 5.0),
+                child: TextField(
+                  controller: _phoneNumberController,
+                  inputFormatters: [_phoneNumberFormatter],
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppColors.primaryColor,
+                    labelText: "e.g +961 XX XXXXXX",
+                    hintText: "Phone Number",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
+                child: Text(
+                  "City:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+              Fieldtext(
+                  controllers: _cityController,
+                  visibility: true,
+                  label: "e.g. Beirut",
+                  hint: "Enter you city",
+                  cap: TextCapitalization.none),
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
+                child: Text(
+                  "Country:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+              Fieldtext(
+                  controllers: _countryController,
+                  visibility: true,
+                  label: "e.g. Lebanon",
+                  hint: "Enter you country",
+                  cap: TextCapitalization.none),
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
+                child: Text(
+                  "Medical Conditions:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+              Fieldtext(
+                  controllers: _medController,
+                  visibility: true,
+                  label: "e.g. Diabetes",
+                  hint: "Enter you medical conditions",
+                  cap: TextCapitalization.none),
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
+                child: Text(
+                  "Date of Birth:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 18.0,
+                  ),
+                ),
+              ),
+              Center(
+                child: RoundedButton(
+                  text:
+                      '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                  press: _showDatePicker,
+                ),
+              ),
+
               // Padding(
               //   padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0),
               //   child: Text(
@@ -200,8 +373,8 @@ class _UserBodySignupState extends State<UserBodySignup> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => LoginPage()));
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => LoginPage()));
                     },
                   ),
                 ],
@@ -210,6 +383,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
                 child: RoundedButton(
                   color: AppColors.primaryColor,
                   press: () async {
+                    addUser();
                     //let's test the app
                     User? user = await registerUsingEmailPassword(
                       email: _emailController.text,
@@ -225,14 +399,15 @@ class _UserBodySignupState extends State<UserBodySignup> {
                       wrongPassword = false;
                       wrongEmail = false;
                     });
-                    if(user != null){
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=> Verification(user: user)));
+                    if (user != null) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => Verification(user: user)));
                     }
                     FirebaseAuth auth = FirebaseAuth.instance;
 
                     try {
                       UserCredential test =
-                      await auth.createUserWithEmailAndPassword(
+                          await auth.createUserWithEmailAndPassword(
                         email: _emailController.text,
                         password: _passwordController.text,
                       );
@@ -249,52 +424,64 @@ class _UserBodySignupState extends State<UserBodySignup> {
                         setState(() {
                           wrongEmail = true;
                         });
-                      }
-                      else if (e.code == 'unknown' &&
-                          _nameController.text.isEmpty && _passwordController.text.isEmpty && _emailController.text.isEmpty) {
+                      } else if (e.code == 'unknown' &&
+                          _nameController.text.isEmpty &&
+                          _passwordController.text.isEmpty &&
+                          _emailController.text.isEmpty) {
                         setState(() {
                           wrongPassword = true;
                           wrongEmail = true;
                           wrongUsername = true;
                         });
                       } else if (e.code == 'unknown' &&
-                          _nameController.text.isEmpty && !_passwordController.text.isEmpty && !_emailController.text.isEmpty) {
+                          _nameController.text.isEmpty &&
+                          !_passwordController.text.isEmpty &&
+                          !_emailController.text.isEmpty) {
                         setState(() {
                           wrongPassword = true;
                           wrongEmail = true;
                           wrongUsername = false;
                         });
                       } else if (e.code == 'unknown' &&
-                          _passwordController.text.isEmpty && !_emailController.text.isEmpty && !_nameController.text.isEmpty) {
+                          _passwordController.text.isEmpty &&
+                          !_emailController.text.isEmpty &&
+                          !_nameController.text.isEmpty) {
                         setState(() {
                           wrongPassword = false;
                           wrongEmail = true;
                           wrongUsername = true;
                         });
                       } else if (e.code == 'unknown' &&
-                          !_passwordController.text.isEmpty && _emailController.text.isEmpty && !_nameController.text.isEmpty) {
+                          !_passwordController.text.isEmpty &&
+                          _emailController.text.isEmpty &&
+                          !_nameController.text.isEmpty) {
                         setState(() {
                           wrongPassword = true;
                           wrongEmail = false;
                           wrongUsername = true;
                         });
                       } else if (e.code == 'unknown' &&
-                          _passwordController.text.isEmpty && _emailController.text.isEmpty && !_nameController.text.isEmpty) {
+                          _passwordController.text.isEmpty &&
+                          _emailController.text.isEmpty &&
+                          !_nameController.text.isEmpty) {
                         setState(() {
                           wrongPassword = true;
                           wrongEmail = true;
                           wrongUsername = false;
                         });
-                      }
-                      else if (e.code == 'unknown' &&
-                          !_passwordController.text.isEmpty && _emailController.text.isEmpty && _nameController.text.isEmpty) {
+                      } else if (e.code == 'unknown' &&
+                          !_passwordController.text.isEmpty &&
+                          _emailController.text.isEmpty &&
+                          _nameController.text.isEmpty) {
                         setState(() {
                           wrongPassword = false;
                           wrongEmail = true;
                           wrongUsername = true;
                         });
                       } else if (e.code == 'unknown' &&
-                          _passwordController.text.isEmpty && !_emailController.text.isEmpty && _nameController.text.isEmpty) {
+                          _passwordController.text.isEmpty &&
+                          !_emailController.text.isEmpty &&
+                          _nameController.text.isEmpty) {
                         setState(() {
                           wrongPassword = true;
                           wrongEmail = false;

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "820870838414",
+    "firebase_url": "https://covid-app-451-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "covid-app-451",
     "storage_bucket": "covid-app-451.appspot.com"
   },

@@ -44,6 +44,7 @@ class _VerificationState extends State<Verification> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
+        backgroundColor: AppColors.primaryColor,
       ),
       body: Center(
         child: Column(
