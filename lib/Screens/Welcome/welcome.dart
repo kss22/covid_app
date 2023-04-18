@@ -1,3 +1,4 @@
+import 'package:covid_app/Screens/Login/login_entity.dart';
 import 'package:covid_app/Screens/Login/login_page.dart';
 import 'package:covid_app/Screens/Signup/signup_screen.dart';
 import 'package:covid_app/assets/assets.dart';
@@ -16,7 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Welcome to Covaccine"),
+        title: const Text("Welcome to AUBCOVAX"),
         centerTitle: true,
         backgroundColor: AppColors.primaryColor,
       ),
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 300,
             child: RaisedButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginEntity()));
               },
               child: const Text("Login", style: TextStyle(fontSize: 18.0),),
               color: AppColors.primaryColor,

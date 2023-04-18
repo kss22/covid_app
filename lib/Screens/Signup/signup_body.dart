@@ -9,6 +9,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:covid_app/assets/user.dart';
 
 class UserBodySignup extends StatefulWidget {
   const UserBodySignup({Key? key}) : super(key: key);
@@ -89,33 +90,29 @@ class _UserBodySignupState extends State<UserBodySignup> {
 
     final DatabaseReference database = FirebaseDatabase.instance.reference();
 
-    DatabaseReference user1Ref = database.child('users').child('user${_idController.text}');
+    DatabaseReference user1Ref = database.child('users');
+
+    String newUserKey = user1Ref.push().key;
 
     void addUser() {
-      Map<String, dynamic> children = {
-        'email': _emailController.text,
-        'phone': _phoneNumberController.text,
-        'name' : _nameController.text,
-        'date' : _selectedDate.toString(),
-        'city' : _cityController.text,
-        'country' : _countryController.text,
-        'medical_conditions': _medController.text,
-      };
-      user1Ref.update(children)
-          .then((value) {
-        print('Data updated successfully');
-      })
-          .catchError((error) {
-        print('Failed to update data: $error');
-      });
+      Users newUser = Users(
+          email: _emailController.text,
+          name: _nameController.text,
+          phone: _phoneNumberController.text,
+          city: _cityController.text,
+          country: _countryController.text,
+          meds: _medController.text,
+          birth: _selectedDate.toString());
+      user1Ref.child(newUserKey).set(newUser.toMap());
     }
+
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(height: 80),
           Text(
-            "Welcome to Covaccine",
+            "Welcome to AUBCOVAX",
             style: TextStyle(
               fontSize: 28.0,
               fontWeight: FontWeight.bold,
@@ -225,7 +222,8 @@ class _UserBodySignupState extends State<UserBodySignup> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 5.0, right: 10.0),
+                padding: EdgeInsets.only(
+                    left: 10.0, bottom: 5.0, top: 5.0, right: 10.0),
                 child: TextField(
                   controller: _idController,
                   keyboardType: TextInputType.phone,

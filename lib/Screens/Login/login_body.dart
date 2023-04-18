@@ -48,7 +48,7 @@ class _BodyLogInState extends State<BodyLogIn> {
         children: [
           SizedBox(height: 80),
           Text(
-            "Welcome to Covaccine",
+            "Welcome to AUBCOVAX",
             style: TextStyle(
               fontSize: 28.0,
               fontWeight: FontWeight.bold,
