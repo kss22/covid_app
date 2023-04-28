@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:covid_app/assets/user.dart';
 
+
 class UserBodySignup extends StatefulWidget {
   const UserBodySignup({Key? key}) : super(key: key);
 
@@ -22,6 +23,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
   bool wrongPassword = false;
   bool wrongUsername = false;
   bool wrongEmail = false;
+
 
   static Future<User?> registerUsingEmailPassword({
     required String name,
@@ -80,9 +82,9 @@ class _UserBodySignupState extends State<UserBodySignup> {
   @override
   Widget build(BuildContext context) {
     TextEditingController _emailController = TextEditingController();
+    TextEditingController _idController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
     TextEditingController _nameController = TextEditingController();
-    TextEditingController _idController = TextEditingController();
     TextEditingController _cityController = TextEditingController();
     TextEditingController _countryController = TextEditingController();
     TextEditingController _medController = TextEditingController();

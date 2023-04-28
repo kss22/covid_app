@@ -2,6 +2,7 @@ import 'package:covid_app/assets/assets.dart';
 import 'package:covid_app/assets/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
