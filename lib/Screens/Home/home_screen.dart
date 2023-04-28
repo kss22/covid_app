@@ -1,8 +1,9 @@
+import 'package:covid_app/Screens/Welcome/welcome.dart';
 import 'package:covid_app/assets/assets.dart';
 import 'package:covid_app/assets/rounded_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,19 +26,27 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    User? user = FirebaseAuth.instance.currentUser;
+    String uid = user?.uid ?? "";
+
     final DatabaseReference database = FirebaseDatabase.instance.reference();
 
+    final DatabaseReference usersRef = database.child('users');
+
+    final DatabaseReference userRef = usersRef.child(uid);
+
     // TODO must be fixed to get the signed in user
-    database.child('users').child('user').once().then((DataSnapshot snapshot) {
+    userRef.once().then((DataSnapshot snapshot) {
       // Handle the retrieved data
       setState(() {
         email = snapshot.value['email'];
         name = snapshot.value['name'];
-        birth = snapshot.value['date'];
+        phone = snapshot.value['phone'];
         city = snapshot.value['city'];
         country = snapshot.value['country'];
-        phone = snapshot.value['phone'];
-        meds = snapshot.value['medical_conditions'];
+        meds = snapshot.value['meds'];
+        birth = snapshot.value['birth'];
         first = snapshot.value['first_dose'];
         second = snapshot.value['second_dose'];
         third = snapshot.value['third_dose'];
@@ -52,6 +61,14 @@ class _HomePageState extends State<HomePage> {
         title: Text("Patient Information Page"),
         centerTitle: true,
         backgroundColor: AppColors.primaryColor,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+              },
+              icon: Icon(Icons.exit_to_app))
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

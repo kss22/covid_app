@@ -1,7 +1,7 @@
 import 'package:covid_app/Screens/Login/login_entity.dart';
-import 'package:covid_app/Screens/Login/login_page.dart';
 import 'package:covid_app/Screens/Signup/signup_screen.dart';
 import 'package:covid_app/assets/assets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -12,8 +12,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+
   @override
   Widget build(BuildContext context) {
+
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    auth.signOut();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -74,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
               color: AppColors.secondaryColor,
               textColor: Colors.white,
             ),
-          )
+          ),
         ],
       ),
     );

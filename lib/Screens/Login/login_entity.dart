@@ -1,3 +1,7 @@
+import 'package:covid_app/Screens/%20MedicalPersonnel/medical_personnel_login_screen.dart';
+import 'package:covid_app/Screens/AdminLogin/admin_login.dart';
+import 'package:covid_app/Screens/AdminLogin/admin_login_screen.dart';
+import 'package:covid_app/Screens/AdminPage/admin_page.dart';
 import 'package:covid_app/Screens/Login/login_page.dart';
 import 'package:covid_app/assets/assets.dart';
 import 'package:covid_app/assets/entities.dart';
@@ -110,6 +114,24 @@ class _LoginEntityState extends State<LoginEntity> {
               Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginPage()));
             },
           ),
+          if (_dropdownvalue == "Admin")
+            RoundedButton(
+              text: "Continue",
+              color: AppColors.primaryColor,
+              press: () {
+                //TODO selection dependency
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> AdminLoginPage()));
+              },
+            ),
+          if (_dropdownvalue == "Medical personnel")
+            RoundedButton(
+              text: "Continue",
+              color: AppColors.primaryColor,
+              press: () {
+                //TODO selection dependency
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> PersonnelLoginPage()));
+              },
+            ),
         ],
       ),
     );

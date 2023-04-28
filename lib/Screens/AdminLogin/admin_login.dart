@@ -1,19 +1,21 @@
+import 'package:covid_app/Screens/AdminPage/admin_page.dart';
 import 'package:covid_app/Screens/Home/home_screen.dart';
 import 'package:covid_app/Screens/Login/login_field_text.dart';
+import 'package:covid_app/Screens/Welcome/welcome.dart';
 import 'package:covid_app/assets/assets.dart';
 import 'package:covid_app/assets/field_text.dart';
 import 'package:covid_app/assets/rounded_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class BodyLogIn extends StatefulWidget {
-  const BodyLogIn({Key? key}) : super(key: key);
+class AdminLogIn extends StatefulWidget {
+  const AdminLogIn({Key? key}) : super(key: key);
 
   @override
-  _BodyLogInState createState() => _BodyLogInState();
+  _AdminLogInState createState() => _AdminLogInState();
 }
 
-class _BodyLogInState extends State<BodyLogIn> {
+class _AdminLogInState extends State<AdminLogIn> {
   bool wrongPassword = false;
   bool wrongUsername = false;
   bool isTooMany = false;
@@ -166,13 +168,14 @@ class _BodyLogInState extends State<BodyLogIn> {
                           password: _passwordController.text,
                           context: context);
                       print(user);
-                      if (user != null && user.uid!="OqmXvTv0B0N8Y1LpFIHTMMMseIB3") {
+                      if (user != null && user.uid == "OqmXvTv0B0N8Y1LpFIHTMMMseIB3") {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => HomePage()));
+                            builder: (context) => AdminPage()));
                         // Navigator.of(context).pushNamedAndRemoveUntil('/home' , (_) => false);
                         // Navigator.pushNamedAndRemoveUntil('/home', (_) => false);
                         // Navigator.of(context).pushReplacementNamed('/home');
-                      } else if(user != null && user.uid=="OqmXvTv0B0N8Y1LpFIHTMMMseIB3"){
+                      }
+                      else if(user != null && user.uid!="OqmXvTv0B0N8Y1LpFIHTMMMseIB3"){
                         setState(() {
                           wrongUsername = true;
                           wrongPassword = false;

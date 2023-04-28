@@ -1,19 +1,20 @@
-import 'package:covid_app/Screens/Home/home_screen.dart';
+import 'package:covid_app/Screens/%20MedicalPersonnel/medical_personnel_home.dart';
 import 'package:covid_app/Screens/Login/login_field_text.dart';
 import 'package:covid_app/assets/assets.dart';
 import 'package:covid_app/assets/field_text.dart';
 import 'package:covid_app/assets/rounded_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-class BodyLogIn extends StatefulWidget {
-  const BodyLogIn({Key? key}) : super(key: key);
+class PersonnelBodyLogIn extends StatefulWidget {
+  const PersonnelBodyLogIn({Key? key}) : super(key: key);
 
   @override
-  _BodyLogInState createState() => _BodyLogInState();
+  _PersonnelBodyLogInState createState() => _PersonnelBodyLogInState();
 }
 
-class _BodyLogInState extends State<BodyLogIn> {
+class _PersonnelBodyLogInState extends State<PersonnelBodyLogIn> {
   bool wrongPassword = false;
   bool wrongUsername = false;
   bool isTooMany = false;
@@ -43,6 +44,9 @@ class _BodyLogInState extends State<BodyLogIn> {
     TextEditingController _passwordController = TextEditingController();
 
     Size size = MediaQuery.of(context).size;
+
+    final DatabaseReference database = FirebaseDatabase.instance.reference();
+
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -166,58 +170,57 @@ class _BodyLogInState extends State<BodyLogIn> {
                           password: _passwordController.text,
                           context: context);
                       print(user);
-                      if (user != null && user.uid!="OqmXvTv0B0N8Y1LpFIHTMMMseIB3") {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => HomePage()));
-                        // Navigator.of(context).pushNamedAndRemoveUntil('/home' , (_) => false);
-                        // Navigator.pushNamedAndRemoveUntil('/home', (_) => false);
-                        // Navigator.of(context).pushReplacementNamed('/home');
-                      } else if(user != null && user.uid=="OqmXvTv0B0N8Y1LpFIHTMMMseIB3"){
-                        setState(() {
-                          wrongUsername = true;
-                          wrongPassword = false;
-                          isTooMany = false;
-                        });
-                      }else {
-                        FirebaseAuth auth = FirebaseAuth.instance;
-                        try {
-                          UserCredential userCredential = await auth.signInWithEmailAndPassword(
-                              email: _emailController.text, password: _passwordController.text);
-                          user = userCredential.user;
-                        } on FirebaseAuthException catch (e) {
+                      database.child('personnel').child(user!.uid).once().then((DataSnapshot snapshot) async {
+                        if (snapshot.value != null) {
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => UserList()));
+                        }  else if(user != null && user!.uid=="OqmXvTv0B0N8Y1LpFIHTMMMseIB3"){
                           setState(() {
-                            wrongUsername = false;
+                            wrongUsername = true;
                             wrongPassword = false;
                             isTooMany = false;
                           });
-                          print(e.code);
-                          if(e.code == "user-not-found"){
+                        }else {
+                          FirebaseAuth auth = FirebaseAuth.instance;
+                          try {
+                            UserCredential userCredential = await auth.signInWithEmailAndPassword(
+                                email: _emailController.text, password: _passwordController.text);
+                            user = userCredential.user;
+                          } on FirebaseAuthException catch (e) {
                             setState(() {
+                              wrongUsername = false;
+                              wrongPassword = false;
+                              isTooMany = false;
+                            });
+                            print(e.code);
+                            if(e.code == "user-not-found"){
+                              setState(() {
+                                wrongUsername = true;
+                              });
+                            }
+                            else if (e.code == "wrong-password") {
+                              setState(() {
+                                wrongPassword = true;
+                              });
+                            }
+                            else if(e.code == "invalid-email"){
+                              setState(() {
+                                wrongUsername = true;
+                              });
+                            }
+                            else if(e.code == "unknown"){
+                              setState(() {
+                                wrongUsername = true;
+                                wrongPassword = true;
+                              });
+                            }
+                            else if(e.code == "too-many-requests"){
                               wrongUsername = true;
-                            });
-                          }
-                          else if (e.code == "wrong-password") {
-                            setState(() {
-                              wrongPassword = true;
-                            });
-                          }
-                          else if(e.code == "invalid-email"){
-                            setState(() {
-                              wrongUsername = true;
-                            });
-                          }
-                          else if(e.code == "unknown"){
-                            setState(() {
-                              wrongUsername = true;
-                              wrongPassword = true;
-                            });
-                          }
-                          else if(e.code == "too-many-requests"){
-                            wrongUsername = true;
-                            isTooMany = true;
+                              isTooMany = true;
+                            }
                           }
                         }
-                      }
+                      });
                     }),
               ),
               // Container(

@@ -11,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:covid_app/assets/user.dart';
 
-
 class UserBodySignup extends StatefulWidget {
   const UserBodySignup({Key? key}) : super(key: key);
 
@@ -23,7 +22,6 @@ class _UserBodySignupState extends State<UserBodySignup> {
   bool wrongPassword = false;
   bool wrongUsername = false;
   bool wrongEmail = false;
-
 
   static Future<User?> registerUsingEmailPassword({
     required String name,
@@ -92,11 +90,11 @@ class _UserBodySignupState extends State<UserBodySignup> {
 
     final DatabaseReference database = FirebaseDatabase.instance.reference();
 
-    DatabaseReference user1Ref = database.child('users');
+    DatabaseReference usersRef = database.child('users');
 
-    String newUserKey = user1Ref.push().key;
-
-    void addUser() {
+    void addUser(user) {
+      var uid = user.uid;
+      final DatabaseReference userRef = usersRef.child(uid);
       Users newUser = Users(
           email: _emailController.text,
           name: _nameController.text,
@@ -104,8 +102,11 @@ class _UserBodySignupState extends State<UserBodySignup> {
           city: _cityController.text,
           country: _countryController.text,
           meds: _medController.text,
+          first_dose: "none",
+          second_dose: "none",
+          third_dose: "none",
           birth: _selectedDate.toString());
-      user1Ref.child(newUserKey).set(newUser.toMap());
+      userRef.set(newUser.toMap());
     }
 
     return SingleChildScrollView(
@@ -383,7 +384,6 @@ class _UserBodySignupState extends State<UserBodySignup> {
                 child: RoundedButton(
                   color: AppColors.primaryColor,
                   press: () async {
-                    addUser();
                     //let's test the app
                     User? user = await registerUsingEmailPassword(
                       email: _emailController.text,
@@ -391,6 +391,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
                       name: _nameController.text,
                     );
                     print(user);
+                    addUser(user);
 
                     RegExp emailRegExp = RegExp(
                         r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$");
