@@ -1,4 +1,5 @@
 import 'package:covid_app/assets/assets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
@@ -20,10 +21,7 @@ class _UserListState extends State<UserList> {
   @override
   void initState() {
     super.initState();
-    databaseReference
-        .child('users')
-        .onValue
-        .listen((event) {
+    databaseReference.child('users').onValue.listen((event) {
       setState(() {
         userList = [];
         Map<dynamic, dynamic> values = event.snapshot.value;
@@ -55,6 +53,7 @@ class _UserListState extends State<UserList> {
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         title: Text('User List'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
             onPressed: () {
@@ -69,26 +68,32 @@ class _UserListState extends State<UserList> {
             icon: Icon(Icons.search),
           ),
         ],
+        leading: IconButton(
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.exit_to_app)),
         bottom: showSearchBar
             ? PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: TextField(
-              controller: searchController,
-              onChanged: filterList,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search, color: Colors.grey),
-                hintText: 'Search by phone number',
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-        )
+                preferredSize: Size.fromHeight(kToolbarHeight),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: filterList,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                      hintText: 'Search by phone number',
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              )
             : null,
       ),
       body: ListView.builder(
@@ -99,10 +104,9 @@ class _UserListState extends State<UserList> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      UserDetails(
-                        user: filteredList[index],
-                      ),
+                  builder: (context) => UserDetails(
+                    user: filteredList[index],
+                  ),
                 ),
               );
             },
@@ -185,7 +189,8 @@ class UserDetails extends StatelessWidget {
                       UserInfoRow(title: 'Email', value: user['email']),
                       UserInfoRow(title: 'Name', value: user['name']),
                       UserInfoRow(title: 'Phone Number', value: user['phone']),
-                      UserInfoRow(title: 'Medical conditions', value: user['meds']),
+                      UserInfoRow(
+                          title: 'Medical conditions', value: user['meds']),
                     ],
                   ),
                 ),
@@ -214,9 +219,12 @@ class UserDetails extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 16),
-                      UserInfoRow(title: 'First Dose', value:user['first_dose'] ),
-                      UserInfoRow(title: 'Second Dose', value:user['second_dose'] ),
-                      UserInfoRow(title: 'Third Dose', value: user['third_dose']),
+                      UserInfoRow(
+                          title: 'First Dose', value: user['first_dose']),
+                      UserInfoRow(
+                          title: 'Second Dose', value: user['second_dose']),
+                      UserInfoRow(
+                          title: 'Third Dose', value: user['third_dose']),
                     ],
                   ),
                 ),

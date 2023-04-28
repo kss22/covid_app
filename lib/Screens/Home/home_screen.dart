@@ -60,12 +60,13 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Patient Information Page"),
         centerTitle: true,
+        automaticallyImplyLeading: false,
         backgroundColor: AppColors.primaryColor,
         actions: [
           IconButton(
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
-                Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+                Navigator.pop(context);
               },
               icon: Icon(Icons.exit_to_app))
         ],
