@@ -2,7 +2,9 @@ import 'package:covid_app/Screens/Login/login_entity.dart';
 import 'package:covid_app/Screens/Signup/signup_screen.dart';
 import 'package:covid_app/assets/assets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -19,6 +21,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final FirebaseAuth auth = FirebaseAuth.instance;
     auth.signOut();
+//     // Create a reference to the time slots node in your Firebase database
+//     final DatabaseReference timeSlotsRef = FirebaseDatabase.instance.reference().child('time_slots');
+//
+// // Define the start and end times for the time slots
+//     DateTime startTime = DateTime(2023, 5, 1, 8);
+//     DateTime endTime = DateTime(2023, 5, 1, 18);
+//
+// // Loop through each 30-minute time slot and add it to the database
+//     while (startTime.isBefore(endTime)) {
+//       // Create a new time slot object with the start time, end time, and availability
+//       String startTimeString = startTime.toString();
+//       String endTimeString = startTime.add(Duration(minutes: 30)).toString();
+//       Map<String, dynamic> newTimeSlot = {
+//         'start_time': startTimeString,
+//         'end_time': endTimeString,
+//         'available': true
+//       };
+//
+//       // Add the new time slot to the database
+//       timeSlotsRef.push().set(newTimeSlot);
+//
+//       // Increment the start time by 30 minutes
+//       startTime = startTime.add(Duration(minutes: 30));
+//     }
 
     return Scaffold(
       backgroundColor: Colors.white,

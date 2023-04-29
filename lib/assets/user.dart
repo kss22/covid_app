@@ -8,7 +8,9 @@ class Users {
   String birth;
   String first_dose;
   String second_dose;
-  String third_dose;
+  String first_appointment;
+  String second_appointment;
+  String uid;
 
   Users({
     required this.email,
@@ -20,7 +22,9 @@ class Users {
     required this.birth,
     required this.first_dose,
     required this.second_dose,
-    required this.third_dose,
+    required this.first_appointment,
+    required this.second_appointment,
+    required this.uid
   });
 
   // Convert User object to Map
@@ -35,7 +39,9 @@ class Users {
       'birth': birth,
       'first_dose': first_dose,
       'second_dose': second_dose,
-      'third_dose': third_dose,
+      'first_appointment': first_appointment,
+      'second_appointment': second_appointment,
+      'uid': uid,
     };
   }
 }

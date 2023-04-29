@@ -15,6 +15,7 @@ class _AdminPageState extends State<AdminPage> {
   List<Map<dynamic, dynamic>> filteredList = [];
   TextEditingController searchController = TextEditingController();
   bool showSearchBar = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -22,6 +23,7 @@ class _AdminPageState extends State<AdminPage> {
 
     databaseReference.child('personnel').onValue.listen((event) {
       setState(() {
+        _isLoading = false;
         userList = [];
         Map<dynamic, dynamic> values = event.snapshot.value;
         values.forEach((key, value) {
@@ -54,10 +56,12 @@ class _AdminPageState extends State<AdminPage> {
         title: Text('Personnel List'),
         centerTitle: true,
         automaticallyImplyLeading: false,
-        leading: IconButton(onPressed: () {
-          FirebaseAuth.instance.signOut();
-          Navigator.pop(context);
-        }, icon: Icon(Icons.exit_to_app)),
+        leading: IconButton(
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.exit_to_app)),
         actions: [
           IconButton(
             onPressed: () {
@@ -71,11 +75,12 @@ class _AdminPageState extends State<AdminPage> {
             },
             icon: Icon(Icons.search),
           ),
-          IconButton(onPressed: (){
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => UserList()));
-
-          }, icon: Icon(Icons.more_vert))
+          IconButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => UserList()));
+              },
+              icon: Icon(Icons.more_vert))
         ],
         bottom: showSearchBar
             ? PreferredSize(
@@ -99,40 +104,43 @@ class _AdminPageState extends State<AdminPage> {
               )
             : null,
       ),
-      body: ListView.builder(
-        itemCount: filteredList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: filteredList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  child: Container(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        filteredList[index]['name'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        filteredList[index]['phone'],
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
                   ),
-                ],
-              ),
-              child: ListTile(
-                title: Text(
-                  filteredList[index]['name'],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                subtitle: Text(
-                  filteredList[index]['phone'],
-                  style: TextStyle(fontSize: 14),
-                ),
-              ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

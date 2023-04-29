@@ -22,6 +22,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
   bool wrongPassword = false;
   bool wrongUsername = false;
   bool wrongEmail = false;
+  String _startTimeString = "";
 
   static Future<User?> registerUsingEmailPassword({
     required String name,
@@ -92,6 +93,34 @@ class _UserBodySignupState extends State<UserBodySignup> {
 
     DatabaseReference usersRef = database.child('users');
 
+    final DatabaseReference timeSlotsRef =
+        FirebaseDatabase.instance.reference().child('time_slots');
+
+    void setAppointment() {
+      timeSlotsRef
+          .orderByChild('available')
+          .equalTo(true)
+          .limitToFirst(1)
+          .once()
+          .then((DataSnapshot snapshot) {
+        if (snapshot.value != null) {
+          // Get the key of the first available time slot
+          String key = snapshot.value.keys.first;
+          // Use the key to update the availability of the time slot to false
+          timeSlotsRef.child(key).update({'available': false});
+          // Use the key to perform other operations on the time slot
+          setState(() {
+            _startTimeString = snapshot.value[key]['start_time'];
+          });
+        } else {
+          // Handle the case when no available time slots are found
+        }
+      }).catchError((error) {
+        // Handle the error
+        print(error);
+      });
+    }
+
     void addUser(user) {
       var uid = user.uid;
       final DatabaseReference userRef = usersRef.child(uid);
@@ -104,8 +133,10 @@ class _UserBodySignupState extends State<UserBodySignup> {
           meds: _medController.text,
           first_dose: "none",
           second_dose: "none",
-          third_dose: "none",
-          birth: _selectedDate.toString());
+          birth: _selectedDate.toString(),
+          first_appointment: _startTimeString,
+          second_appointment: "-",
+          uid: uid);
       userRef.set(newUser.toMap());
     }
 
@@ -384,6 +415,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
                 child: RoundedButton(
                   color: AppColors.primaryColor,
                   press: () async {
+                    setAppointment();
                     //let's test the app
                     User? user = await registerUsingEmailPassword(
                       email: _emailController.text,

@@ -7,9 +7,9 @@ import 'package:firebase_database/firebase_database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-
   @override
   _HomePageState createState() => _HomePageState();
+
 }
 
 class _HomePageState extends State<HomePage> {
@@ -22,7 +22,10 @@ class _HomePageState extends State<HomePage> {
   String meds = "";
   String first = "";
   String second = "";
-  String third = "";
+  bool _isLoading = true;
+  String _startTimeString = "";
+  String _startTimeStringSecond = "None";
+  bool _check = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +39,13 @@ class _HomePageState extends State<HomePage> {
 
     final DatabaseReference userRef = usersRef.child(uid);
 
+
     // TODO must be fixed to get the signed in user
     userRef.once().then((DataSnapshot snapshot) {
       // Handle the retrieved data
       setState(() {
+
+        _isLoading = false;
         email = snapshot.value['email'];
         name = snapshot.value['name'];
         phone = snapshot.value['phone'];
@@ -49,12 +55,15 @@ class _HomePageState extends State<HomePage> {
         birth = snapshot.value['birth'];
         first = snapshot.value['first_dose'];
         second = snapshot.value['second_dose'];
-        third = snapshot.value['third_dose'];
+        _startTimeString = snapshot.value['first_appointment'];
+        _startTimeStringSecond = snapshot.value['second_appointment'];
       });
     }).catchError((error) {
       // Handle any errors that occur while retrieving data
       print('Failed to retrieve data: $error');
     });
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -71,7 +80,10 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(Icons.exit_to_app))
         ],
       ),
-      body: SingleChildScrollView(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          :
+      SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,7 +148,6 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(height: 16),
                       UserInfoRow(title: 'First Dose', value: first),
                       UserInfoRow(title: 'Second Dose', value: second),
-                      UserInfoRow(title: 'Third Dose', value: third),
                     ],
                   ),
                 ),
@@ -145,11 +156,48 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 26.0,
             ),
+            if (second!="none")
             RoundedButton(
                 text: "Download Certificate",
                 press: () {
                   //TODO add the funtion
-                })
+                }),
+            RoundedButton(
+                text: "Appointments",
+                press: () {
+                  setState(() {
+                    _check = !_check;
+                  });
+                }),
+
+            if (_check==true)
+            Container(
+              width: double.infinity,
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Appointments' History",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      UserInfoRow(title: 'First Dose', value: _startTimeString),
+                      UserInfoRow(title: 'Second Dose', value: _startTimeStringSecond)
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
