@@ -160,7 +160,6 @@ class UserDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final DatabaseReference timeSlotsRef =
     FirebaseDatabase.instance.reference().child('time_slots');
-    String _startTimeString = "";
 
     void setAppointment() {
       timeSlotsRef
@@ -175,7 +174,15 @@ class UserDetails extends StatelessWidget {
           // Use the key to update the availability of the time slot to false
           timeSlotsRef.child(key).update({'available': false});
           // Use the key to perform other operations on the time slot
-          _startTimeString = snapshot.value[key]['start_time'];
+          final DatabaseReference ref = FirebaseDatabase.instance.reference().child('users').child(user['uid']);
+
+          ref.update({
+            'second_appointment': snapshot.value[key]['start_time']
+          }).then((value) {
+            print("Value updated successfully");
+          }).catchError((error) {
+            print("Failed to update value: $error");
+          });
         } else {
           // Handle the case when no available time slots are found
         }
@@ -325,15 +332,7 @@ class UserDetails extends StatelessWidget {
                   text: "Book appointment",
                   press: () {
                     setAppointment();
-                    final DatabaseReference ref = FirebaseDatabase.instance.reference().child('users').child(user['uid']);
 
-                    ref.update({
-                      'second_appointment': _startTimeString
-                    }).then((value) {
-                      print("Value updated successfully");
-                    }).catchError((error) {
-                      print("Failed to update value: $error");
-                    });
                   }),
           ],
         ),
