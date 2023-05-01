@@ -43,7 +43,10 @@ class _AdminPageState extends State<AdminPage> {
   void filterList(String query) {
     setState(() {
       filteredList = userList
-          .where((user) => user['phone'].toString().contains(query))
+          .where((user) =>
+          user['phone'].toString().contains(query) ||
+          user['name'].toString().contains(query.toLowerCase())
+      )
           .toList();
     });
   }
@@ -96,7 +99,7 @@ class _AdminPageState extends State<AdminPage> {
                     onChanged: filterList,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search, color: Colors.grey),
-                      hintText: 'Search by phone number',
+                      hintText: 'Search by name, or phone number',
                       border: InputBorder.none,
                     ),
                   ),
