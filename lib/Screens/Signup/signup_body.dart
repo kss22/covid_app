@@ -10,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:covid_app/assets/user.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
+
 
 class UserBodySignup extends StatefulWidget {
   const UserBodySignup({Key? key}) : super(key: key);
@@ -96,6 +99,24 @@ class _UserBodySignupState extends State<UserBodySignup> {
     final DatabaseReference timeSlotsRef =
         FirebaseDatabase.instance.reference().child('time_slots');
 
+    Future<void> sendCustomizedEmail() async {
+
+      try {
+        var userEmail = 'covidapp451@gmail.com';
+        var message = Message();
+        message.subject = 'Your Next Appointment';
+        message.text = 'Your next appointment is on ${_startTimeString}';
+        message.from = Address(userEmail.toString());
+        message.recipients.add(userEmail);
+        var smtpServer = gmailSaslXoauth2(userEmail, 'heyxxqbpcqnqjpox');
+        send(message, smtpServer);
+        print('Email has been sent successfully');
+      } catch (e) {
+        print('Error sending email: $e');
+      }
+    }
+    sendCustomizedEmail();
+
     void setAppointment() {
       timeSlotsRef
           .orderByChild('available')
@@ -122,6 +143,7 @@ class _UserBodySignupState extends State<UserBodySignup> {
     }
 
     void addUser(user) {
+      sendCustomizedEmail();
       var uid = user.uid;
       final DatabaseReference userRef = usersRef.child(uid);
       Users newUser = Users(
